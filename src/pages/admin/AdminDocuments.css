@@ -1,0 +1,145 @@
+* {
+  box-sizing: border-box;
+}
+
+.admin-layout {
+  display: flex;
+  width: 100vw;
+  min-height: 100vh;
+  background-color: #f7f8fc;
+  margin: 0;
+  padding: 0;
+}
+
+.admin-main {
+  flex: 1;
+  width: calc(100vw - 260px);
+  padding: 28px 40px;
+  background: #f7f8fc;
+  min-height: 100vh;
+  overflow-y: auto;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+
+.topbar h1 {
+  margin: 0;
+  font-size: 26px;
+  color: #111827;
+  font-weight: 800;
+}
+
+.topbar > div:first-child p {
+  margin-top: 4px;
+  color: #6b7280;
+  font-size: 14px;
+}
+
+.upload-btn {
+  background-color: #7c3aed;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: background 0.2s;
+}
+
+.upload-btn:hover {
+  background-color: #6d28d9;
+}
+
+.table-container {
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+  overflow: hidden;
+}
+
+.documents-table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.documents-table th {
+  background-color: #ffffff;
+  color: #6b7280;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 16px 24px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.documents-table td {
+  padding: 16px 24px;
+  border-bottom: 1px solid #f3f4f6;
+  font-size: 14px;
+  color: #1f2937;
+}
+
+.documents-table tr:last-child td {
+  border-bottom: none;
+}
+
+.doc-name-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.file-icon {
+  font-size: 16px;
+  color: #e11d48;
+}
+
+.file-title {
+  font-weight: 600;
+  color: #111827;
+}
+
+.type-badge,
+.uploader-badge {
+  background-color: #f3f4f6;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #4b5563;
+  display: inline-block;
+}
+
+.date-text {
+  color: #4b5563;
+  font-size: 14px;
+}
+
+.actions-cell {
+  display: flex;
+  gap: 14px;
+}
+
+.action-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  padding: 2px;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.action-btn:hover {
+  opacity: 1;
+}
