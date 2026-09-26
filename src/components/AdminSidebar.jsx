@@ -1,8 +1,22 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
+import {
+  LayoutDashboard,
+  FileText,
+  Star,
+  Users,
+  Settings
+} from "lucide-react";
 import "./AdminSidebar.css";
 
 function AdminSidebar() {
+  const navigate = useNavigate();
+
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
+
   return (
     <div className="admin-sidebar">
       <div>
@@ -22,7 +36,7 @@ function AdminSidebar() {
               isActive ? "menu-item active-menu" : "menu-item"
             }
           >
-            <span>▣</span>
+            <LayoutDashboard size={20} />
             Dashboard
           </NavLink>
 
@@ -32,7 +46,7 @@ function AdminSidebar() {
               isActive ? "menu-item active-menu" : "menu-item"
             }
           >
-            <span>▤</span>
+            <FileText size={20} />
             Documents
           </NavLink>
 
@@ -42,7 +56,7 @@ function AdminSidebar() {
               isActive ? "menu-item active-menu" : "menu-item"
             }
           >
-            <span>★</span>
+            <Star size={20} />
             Highlights
           </NavLink>
 
@@ -52,19 +66,28 @@ function AdminSidebar() {
               isActive ? "menu-item active-menu" : "menu-item"
             }
           >
-            <span>👤</span>
+            <Users size={20} />
             Users
           </NavLink>
 
-          <div className="menu-item">
-            <span>⚙</span>
+          <NavLink
+            to="/admin/settings"
+            className={({ isActive }) =>
+              isActive ? "menu-item active-menu" : "menu-item"
+            }
+          >
+            <Settings size={20} />
             Settings
-          </div>
+          </NavLink>
         </nav>
       </div>
 
       <div className="sidebar-logout">
-        <div className="menu-item logout-item">
+        <div 
+          className="menu-item logout-item" 
+          onClick={handleLogout} 
+          style={{ cursor: "pointer" }}
+        >
           <span>↪</span>
           Logout
         </div>

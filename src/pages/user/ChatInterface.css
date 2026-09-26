@@ -1,0 +1,266 @@
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  background-color: #f7f8fc;
+  color: #18223a;
+}
+
+.chat-layout {
+  display: grid;
+  grid-template-columns: 260px 1fr 280px;
+  height: 100vh;
+  overflow: hidden;
+  background: #f7f8fc;
+}
+
+/* LEFT SIDEBAR */
+.conversations-sidebar {
+  background: white;
+  border-right: 1px solid #e6e9f2;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.conversations-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.new-chat-btn {
+  background: #eeeaff;
+  color: #5b43e6;
+  border: none;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.conv-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.conv-item {
+  padding: 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  color: #505c75;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.conv-item:hover {
+  background: #f5f3ff;
+}
+
+.conv-item.active {
+  background: #f1eeff;
+  color: #563de2;
+  font-weight: 600;
+}
+
+.conv-item small {
+  font-size: 10px;
+  color: #8792a7;
+}
+
+/* CENTER MAIN CHAT */
+.chat-main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 20px 30px;
+}
+
+.chat-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e6e9f2;
+  padding-bottom: 15px;
+  margin-bottom: 20px;
+}
+
+.chat-header h3 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.clear-btn {
+  background: transparent;
+  border: 1px solid #dce1ec;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+  color: #606e88;
+}
+
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding-right: 10px;
+}
+
+.message-row {
+  display: flex;
+  gap: 12px;
+  max-width: 75%;
+}
+
+.message-row.user {
+  margin-left: auto;
+  flex-direction: row-reverse;
+}
+
+.message-bubble {
+  padding: 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.message-bubble.user {
+  background: #6045df;
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.message-bubble.bot {
+  background: white;
+  color: #263452;
+  border: 1px solid #e4e8f1;
+  border-bottom-left-radius: 2px;
+}
+
+.bot-avatar {
+  font-size: 24px;
+}
+
+.message-bubble .time {
+  display: block;
+  font-size: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 5px;
+  text-align: right;
+}
+
+.source-tag {
+  margin-top: 10px;
+  font-size: 11px;
+  color: #7c879d;
+  border-top: 1px solid #edf0f5;
+  padding-top: 6px;
+}
+
+.chat-input-form {
+  display: flex;
+  align-items: center;
+  background: white;
+  border: 1px solid #dce1ec;
+  border-radius: 30px;
+  padding: 8px 12px;
+  margin-top: 15px;
+}
+
+.chat-input-form input {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 14px;
+  padding: 8px;
+  background: transparent;
+}
+
+.send-btn {
+  background: #6045df;
+  color: white;
+  border: none;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* RIGHT SOURCES SIDEBAR */
+.sources-sidebar {
+  background: white;
+  border-left: 1px solid #e6e9f2;
+  padding: 20px 15px;
+  display: flex;
+  flex-direction: column;
+}
+
+.sources-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 15px;
+}
+
+.sources-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  flex: 1;
+}
+
+.source-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid #edf0f5;
+  border-radius: 10px;
+  background: #fcfdff;
+}
+
+.file-icon {
+  font-size: 20px;
+}
+
+.file-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.file-info strong {
+  font-size: 12px;
+  color: #263452;
+}
+
+.file-info small {
+  font-size: 10px;
+  color: #8792a7;
+}
+
+.view-all-btn {
+  background: white;
+  border: 1px solid #dce1ec;
+  color: #263452;
+  padding: 12px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  margin-top: auto;
+}

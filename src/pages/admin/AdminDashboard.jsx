@@ -1,8 +1,37 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import AdminSidebar from "../../components/AdminSidebar";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
+  const [stats, setStats] = useState({
+    usersCount: 0,
+    documentsCount: 0,
+    highlightsCount: 0,
+    maintenanceStatus: "Inactive",
+  });
+  const [recentDocs, setRecentDocs] = useState([]);
+  const [recentHighlights, setRecentHighlights] = useState([]);
+
+  useEffect(() => {
+    Promise.all([
+      fetch("http://localhost:5000/api/users").then((res) => res.json()),
+      fetch("http://localhost:5000/api/documents").then((res) => res.json()),
+      fetch("http://localhost:5000/api/highlights").then((res) => res.json()),
+      fetch("http://localhost:5000/api/settings").then((res) => res.json()),
+    ])
+      .then(([users, docs, highlights, settings]) => {
+        setStats({
+          usersCount: users.length || 0,
+          documentsCount: docs.length || 0,
+          highlightsCount: highlights.length || 0,
+          maintenanceStatus: settings.maintenanceMode ? "Active" : "Inactive",
+        });
+        setRecentDocs(docs.slice(0, 4));
+        setRecentHighlights(highlights.slice(0, 4));
+      })
+      .catch((err) => console.error("Error fetching dashboard live data:", err));
+  }, []);
+
   return (
     <div className="admin-layout">
       <AdminSidebar />
@@ -18,7 +47,7 @@ function AdminDashboard() {
             <div className="profile-circle">A</div>
             <div>
               <h4>Admin</h4>
-              <p>admin@knoai.com</p>
+              <p>admin@infohub.com</p>
             </div>
           </div>
         </div>
@@ -28,7 +57,7 @@ function AdminDashboard() {
             <div className="stat-icon purple">👥</div>
             <div>
               <p>Total Users</p>
-              <h2>150</h2>
+              <h2>{stats.usersCount}</h2>
             </div>
           </div>
 
@@ -36,7 +65,7 @@ function AdminDashboard() {
             <div className="stat-icon blue">📄</div>
             <div>
               <p>Total Documents</p>
-              <h2>45</h2>
+              <h2>{stats.documentsCount}</h2>
             </div>
           </div>
 
@@ -44,15 +73,15 @@ function AdminDashboard() {
             <div className="stat-icon orange">⭐</div>
             <div>
               <p>Total Highlights</p>
-              <h2>18</h2>
+              <h2>{stats.highlightsCount}</h2>
             </div>
           </div>
 
           <div className="stat-card">
-            <div className="stat-icon pink">💬</div>
+            <div className="stat-icon pink">⚙</div>
             <div>
-              <p>Total Chats</p>
-              <h2>320</h2>
+              <p>Maintenance Mode</p>
+              <h2>{stats.maintenanceStatus}</h2>
             </div>
           </div>
         </div>
@@ -64,37 +93,19 @@ function AdminDashboard() {
               <button>View All</button>
             </div>
 
-            <div className="document-row">
-              <div className="doc-icon-box">📕</div>
-              <div>
-                <h4>DBMS_Notes.pdf</h4>
-                <p>Aug 12, 2026</p>
-              </div>
-            </div>
-
-            <div className="document-row">
-              <div className="doc-icon-box">📕</div>
-              <div>
-                <h4>Cloud_Computing.pdf</h4>
-                <p>Aug 10, 2026</p>
-              </div>
-            </div>
-
-            <div className="document-row">
-              <div className="doc-icon-box">📕</div>
-              <div>
-                <h4>Placement_Guide.pdf</h4>
-                <p>Aug 08, 2026</p>
-              </div>
-            </div>
-
-            <div className="document-row">
-              <div className="doc-icon-box">📕</div>
-              <div>
-                <h4>Python_Notes.pdf</h4>
-                <p>Aug 05, 2026</p>
-              </div>
-            </div>
+            {recentDocs.length > 0 ? (
+              recentDocs.map((doc) => (
+                <div key={doc._id} className="document-row">
+                  <div className="doc-icon-box">📕</div>
+                  <div>
+                    <h4>{doc.title || doc.name}</h4>
+                    <p>{doc.uploadDate || "Recent"}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: "#6b7280", fontSize: "14px" }}>No documents found.</p>
+            )}
           </div>
 
           <div className="dashboard-card">
@@ -103,29 +114,19 @@ function AdminDashboard() {
               <button>View All</button>
             </div>
 
-            <div className="highlight-row">
-              <div className="high-icon-box">⭐</div>
-              <div>
-                <h4>Placement Registration Extended</h4>
-                <p>Aug 12, 2026</p>
-              </div>
-            </div>
-
-            <div className="highlight-row">
-              <div className="high-icon-box">⭐</div>
-              <div>
-                <h4>DBMS Assignment Uploaded</h4>
-                <p>Aug 10, 2026</p>
-              </div>
-            </div>
-
-            <div className="highlight-row">
-              <div className="high-icon-box">⭐</div>
-              <div>
-                <h4>Cloud Workshop Scheduled</h4>
-                <p>Aug 07, 2026</p>
-              </div>
-            </div>
+            {recentHighlights.length > 0 ? (
+              recentHighlights.map((high) => (
+                <div key={high._id} className="highlight-row">
+                  <div className="high-icon-box">⭐</div>
+                  <div>
+                    <h4>{high.title}</h4>
+                    <p>Priority: {high.priority} | {high.date}</p>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p style={{ color: "#6b7280", fontSize: "14px" }}>No highlights found.</p>
+            )}
           </div>
         </div>
       </div>
