@@ -1,8 +1,70 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import './Home.css';
 
 export default function Home() {
+  const [contactForm, setContactForm] = useState({
+    name: '',
+    email: '',
+    message: ''
+  });
+
+  const [sending, setSending] = useState(false);
+  const [contactFeedback, setContactFeedback] = useState(null);
+
+  const handleContactChange = (e) => {
+    const { name, value } = e.target;
+
+    setContactForm((prev) => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  const handleContactSubmit = async (e) => {
+    e.preventDefault();
+
+    if (sending) return;
+
+    setSending(true);
+    setContactFeedback(null);
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(contactForm)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.message || 'Unable to send your message.');
+      }
+
+      setContactFeedback({
+        type: 'success',
+        text: result.message || 'Your message was sent successfully!'
+      });
+
+      setContactForm({
+        name: '',
+        email: '',
+        message: ''
+      });
+    } catch (error) {
+      setContactFeedback({
+        type: 'error',
+        text: error.message || 'Unable to connect to the server. Please try again.'
+      });
+    } finally {
+      setSending(false);
+    }
+  };
+
   return (
     <div className="landing-container">
       {/* Navbar Header */}
@@ -47,11 +109,11 @@ export default function Home() {
             <div className="bot-container">
               <div className="bot-avatar">
                 <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                  <rect x="3" y="11" width="18" height="10" rx="2"/>
-                  <circle cx="12" cy="5" r="2"/>
-                  <path d="M12 7v4"/>
-                  <line x1="8" y1="16" x2="8" y2="16"/>
-                  <line x1="16" y1="16" x2="16" y2="16"/>
+                  <rect x="3" y="11" width="18" height="10" rx="2" />
+                  <circle cx="12" cy="5" r="2" />
+                  <path d="M12 7v4" />
+                  <line x1="8" y1="16" x2="8" y2="16" />
+                  <line x1="16" y1="16" x2="16" y2="16" />
                 </svg>
               </div>
             </div>
@@ -71,16 +133,16 @@ export default function Home() {
 
           <div className="plant-icon">
             <svg width="40" height="45" viewBox="0 0 45 55" fill="none">
-              <path d="M15 35 C 10 20, 0 20, 5 10 C 15 15, 18 25, 18 35 Z" fill="#60a5fa"/>
-              <path d="M22 35 C 20 15, 30 10, 35 15 C 32 25, 26 30, 22 35 Z" fill="#3b82f6"/>
-              <path d="M15 35 L 30 35 L 26 52 L 19 52 Z" fill="#818cf8"/>
+              <path d="M15 35 C 10 20, 0 20, 5 10 C 15 15, 18 25, 18 35 Z" fill="#60a5fa" />
+              <path d="M22 35 C 20 15, 30 10, 35 15 C 32 25, 26 30, 22 35 Z" fill="#3b82f6" />
+              <path d="M15 35 L 30 35 L 26 52 L 19 52 Z" fill="#818cf8" />
             </svg>
           </div>
 
           <div className="cup-icon">
             <svg width="28" height="32" viewBox="0 0 30 35" fill="none">
-              <rect x="5" y="10" width="18" height="20" rx="4" fill="#6366f1"/>
-              <path d="M23 15 H 26 A 3 3 0 0 1 29 18 V 20 A 3 3 0 0 1 26 23 H 23" stroke="#6366f1" strokeWidth="2"/>
+              <rect x="5" y="10" width="18" height="20" rx="4" fill="#6366f1" />
+              <path d="M23 15 H 26 A 3 3 0 0 1 29 18 V 20 A 3 3 0 0 1 26 23 H 23" stroke="#6366f1" strokeWidth="2" />
             </svg>
           </div>
         </div>
@@ -92,7 +154,7 @@ export default function Home() {
           <div className="card-item">
             <div className="card-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
               </svg>
             </div>
             <h3>AI Chat Assistant</h3>
@@ -102,8 +164,8 @@ export default function Home() {
           <div className="card-item">
             <div className="card-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
-                <polyline points="14 2 14 8 20 8"/>
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
               </svg>
             </div>
             <h3>Knowledge Base</h3>
@@ -113,8 +175,8 @@ export default function Home() {
           <div className="card-item">
             <div className="card-icon">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="3"/>
-                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+                <circle cx="12" cy="12" r="3" />
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 0 2.83 2.83l-.06.06a2 2 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" />
               </svg>
             </div>
             <h3>Daily Highlights</h3>
@@ -127,7 +189,7 @@ export default function Home() {
       <section id="about" className="section-container">
         <h2 className="section-title">About InfoHub</h2>
         <p className="section-subtitle">Empowering teams and students with natural language document retrieval</p>
-        
+
         <div className="about-grid">
           <div className="about-card">
             <p>
@@ -147,23 +209,68 @@ export default function Home() {
         <h2 className="section-title">Contact Us</h2>
         <p className="section-subtitle">Have questions? Send us a message directly.</p>
 
-        <form className="contact-form" onSubmit={(e) => e.preventDefault()}>
+        <form className="contact-form" onSubmit={handleContactSubmit}>
           <div className="form-group">
-            <label>Full Name</label>
-            <input type="text" placeholder="Enter your full name" required />
+            <label htmlFor="contact-name">Full Name</label>
+            <input
+              id="contact-name"
+              name="name"
+              type="text"
+              placeholder="Enter your full name"
+              value={contactForm.name}
+              onChange={handleContactChange}
+              maxLength={100}
+              required
+            />
           </div>
 
           <div className="form-group">
-            <label>Email Address</label>
-            <input type="email" placeholder="Enter your email" required />
+            <label htmlFor="contact-email">Email Address</label>
+            <input
+              id="contact-email"
+              name="email"
+              type="email"
+              placeholder="Enter your email"
+              value={contactForm.email}
+              onChange={handleContactChange}
+              maxLength={254}
+              required
+            />
           </div>
 
           <div className="form-group">
-            <label>Message</label>
-            <textarea placeholder="Write your message here..." rows="5" required></textarea>
+            <label htmlFor="contact-message">Message</label>
+            <textarea
+              id="contact-message"
+              name="message"
+              placeholder="Write your message here..."
+              rows="5"
+              value={contactForm.message}
+              onChange={handleContactChange}
+              maxLength={5000}
+              required
+            />
           </div>
 
-          <button type="submit" className="btn-send-message">Send Message</button>
+          <button
+            type="submit"
+            className="btn-send-message"
+            disabled={sending}
+          >
+            {sending ? 'Sending...' : 'Send Message'}
+          </button>
+
+          {contactFeedback && (
+            <p
+              role="status"
+              aria-live="polite"
+              style={{
+                color: contactFeedback.type === 'success' ? 'green' : 'red'
+              }}
+            >
+              {contactFeedback.text}
+            </p>
+          )}
         </form>
       </section>
 

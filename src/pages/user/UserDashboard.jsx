@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./UserDashboard.css";
@@ -29,40 +28,60 @@ function UserDashboard() {
 
       // ================= DOCUMENTS =================
 
-      const documentsResponse = await fetch(
-        "http://localhost:5000/api/documents"
-      );
+      try {
+        const documentsResponse = await fetch(
+          "http://localhost:5000/api/documents"
+        );
 
-      if (documentsResponse.ok) {
-        const documentsData = await documentsResponse.json();
+        if (documentsResponse.ok) {
+          const documentsData = await documentsResponse.json();
 
-        if (Array.isArray(documentsData)) {
-          setDocuments(documentsData);
+          console.log("Documents:", documentsData);
+
+          if (Array.isArray(documentsData)) {
+            setDocuments(documentsData);
+          } else if (Array.isArray(documentsData.documents)) {
+            setDocuments(documentsData.documents);
+          } else {
+            setDocuments([]);
+          }
         } else {
           setDocuments([]);
         }
+      } catch (error) {
+        console.error("Documents error:", error);
+        setDocuments([]);
       }
 
       // ================= HIGHLIGHTS =================
 
-      const highlightsResponse = await fetch(
-        "http://localhost:5000/api/highlights"
-      );
+      try {
+        const highlightsResponse = await fetch(
+          "http://localhost:5000/api/highlights"
+        );
 
-      if (highlightsResponse.ok) {
-        const highlightsData = await highlightsResponse.json();
+        if (highlightsResponse.ok) {
+          const highlightsData = await highlightsResponse.json();
 
-        if (Array.isArray(highlightsData)) {
-          setHighlights(highlightsData);
+          console.log("Highlights:", highlightsData);
+
+          if (Array.isArray(highlightsData)) {
+            setHighlights(highlightsData);
+          } else if (Array.isArray(highlightsData.highlights)) {
+            setHighlights(highlightsData.highlights);
+          } else {
+            setHighlights([]);
+          }
         } else {
           setHighlights([]);
         }
+      } catch (error) {
+        console.error("Highlights error:", error);
+        setHighlights([]);
       }
+
     } catch (error) {
-      console.error(
-        "Error loading dashboard data:",
-        error
-      );
+      console.error("Error loading dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -122,7 +141,7 @@ function UserDashboard() {
         <nav className="user-navigation">
 
           <Link
-            to="/user-dashboard"
+            to="/user/dashboard"
             className="user-nav-item active"
           >
             <span className="nav-icon">⌂</span>
@@ -130,7 +149,7 @@ function UserDashboard() {
           </Link>
 
           <Link
-            to="/chat"
+            to="/user/chat"
             className="user-nav-item"
           >
             <span className="nav-icon">◉</span>
@@ -138,7 +157,7 @@ function UserDashboard() {
           </Link>
 
           <Link
-            to="/documents"
+            to="/user/documents"
             className="user-nav-item"
           >
             <span className="nav-icon">▣</span>
@@ -146,7 +165,7 @@ function UserDashboard() {
           </Link>
 
           <Link
-            to="/highlights"
+            to="/user/highlights"
             className="user-nav-item"
           >
             <span className="nav-icon">✦</span>
@@ -154,7 +173,7 @@ function UserDashboard() {
           </Link>
 
           <Link
-            to="/history"
+            to="/user/history"
             className="user-nav-item"
           >
             <span className="nav-icon">◷</span>
@@ -162,7 +181,7 @@ function UserDashboard() {
           </Link>
 
           <Link
-            to="/profile"
+            to="/user/profile"
             className="user-nav-item"
           >
             <span className="nav-icon">○</span>
@@ -224,7 +243,7 @@ function UserDashboard() {
               Daily Knowledge Highlights
             </h2>
 
-            <Link to="/highlights">
+            <Link to="/user/highlights">
               View All
             </Link>
 
@@ -290,7 +309,7 @@ function UserDashboard() {
                     </span>
 
                     <h3>
-                      {highlight.title}
+                      {highlight.title || "Untitled Highlight"}
                     </h3>
 
                     {highlight.date && (
@@ -334,7 +353,7 @@ function UserDashboard() {
               />
 
               <button
-                onClick={() => navigate("/chat")}
+                onClick={() => navigate("/user/chat")}
               >
                 ➜
               </button>
@@ -412,6 +431,3 @@ function UserDashboard() {
 }
 
 export default UserDashboard;
-
-
-

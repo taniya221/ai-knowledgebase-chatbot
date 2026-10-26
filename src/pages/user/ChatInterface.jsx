@@ -1,7 +1,7 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./ChatInterface.css";
+import ReactMarkdown from "react-markdown";
 
 export default function ChatInterface() {
   const navigate = useNavigate();
@@ -11,9 +11,7 @@ export default function ChatInterface() {
   // =====================================================
 
   const [conversations, setConversations] = useState([]);
-
-  const [currentChatId, setCurrentChatId] =
-    useState(null);
+  const [currentChatId, setCurrentChatId] = useState(null);
 
   const [messages, setMessages] = useState([
     {
@@ -24,21 +22,18 @@ export default function ChatInterface() {
   ]);
 
   const [documents, setDocuments] = useState([]);
-
   const [input, setInput] = useState("");
 
-  const [loadingDocs, setLoadingDocs] =
-    useState(true);
-
-  const [sending, setSending] =
-    useState(false);
+  const [loadingDocs, setLoadingDocs] = useState(true);
+  const [sending, setSending] = useState(false);
 
   // =====================================================
-  // LOAD DOCUMENTS
+  // LOAD DATA WHEN PAGE OPENS
   // =====================================================
 
   useEffect(() => {
     fetchDocuments();
+    fetchConversations();
   }, []);
 
   // =====================================================
@@ -54,9 +49,7 @@ export default function ChatInterface() {
       );
 
       if (!response.ok) {
-        throw new Error(
-          "Failed to fetch documents"
-        );
+        throw new Error("Failed to fetch documents");
       }
 
       const data = await response.json();
@@ -67,11 +60,7 @@ export default function ChatInterface() {
         setDocuments([]);
       }
     } catch (error) {
-      console.error(
-        "Error fetching documents:",
-        error
-      );
-
+      console.error("Error fetching documents:", error);
       setDocuments([]);
     } finally {
       setLoadingDocs(false);
@@ -79,23 +68,116 @@ export default function ChatInterface() {
   };
 
   // =====================================================
+  // FETCH CHAT HISTORY
+  // =====================================================
+
+  const fetchConversations = async () => {
+    try {
+      console.log("Fetching conversations...");
+
+      const response = await fetch(
+        "http://localhost:5000/api/conversations"
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch conversations");
+      }
+
+      const data = await response.json();
+
+      console.log("Conversations received:", data);
+
+      if (Array.isArray(data)) {
+        setConversations(data);
+      } else {
+        setConversations([]);
+      }
+    } catch (error) {
+      console.error(
+        "Error fetching conversations:",
+        error
+      );
+
+      setConversations([]);
+    }
+  };
+
+  // =====================================================
+  // LOAD ONE OLD CONVERSATION
+  // =====================================================
+
+  const loadConversation = async (chatId) => {
+    try {
+      console.log("Loading conversation:", chatId);
+
+      const response = await fetch(
+        `http://localhost:5000/api/conversations/${chatId}`
+      );
+
+      const data = await response.json();
+
+      console.log("Conversation data:", data);
+
+      if (!response.ok) {
+        throw new Error(
+          data.error || "Failed to load conversation"
+        );
+      }
+
+      if (data.conversation) {
+        setCurrentChatId(
+          data.conversation.chatId
+        );
+
+        const loadedMessages =
+          data.conversation.messages.map(
+            (message) => ({
+              sender: message.sender,
+              text: message.text,
+              source: message.source || null,
+              time: message.time
+                ? new Date(
+                    message.time
+                  ).toLocaleTimeString([], {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  })
+                : "",
+            })
+          );
+
+        setMessages(loadedMessages);
+      }
+    } catch (error) {
+      console.error(
+        "Load conversation error:",
+        error
+      );
+    }
+  };
+
+  <button
+  onClick={() => window.history.back()}
+  className="sidebar-back-button"
+>
+  ← Back
+</button>
+  // =====================================================
   // SEND QUESTION
   // =====================================================
 
   const handleSend = async (e) => {
     e.preventDefault();
 
-    // Don't send empty message
     if (!input.trim() || sending) {
       return;
     }
 
     const userQuestion = input.trim();
 
-    // Clear input box
     setInput("");
 
-    // Add user's message immediately
+    // Show user message immediately
     setMessages((previousMessages) => [
       ...previousMessages,
       {
@@ -114,10 +196,6 @@ export default function ChatInterface() {
     setSending(true);
 
     try {
-      // =================================================
-      // SEND QUESTION TO BACKEND
-      // =================================================
-
       const response = await fetch(
         "http://localhost:5000/api/chat",
         {
@@ -134,13 +212,9 @@ export default function ChatInterface() {
         }
       );
 
-      // Get backend response
       const data = await response.json();
 
-      console.log(
-        "Chat response:",
-        data
-      );
+      console.log("Chat response:", data);
 
       // =================================================
       // SUCCESS
@@ -161,16 +235,26 @@ export default function ChatInterface() {
               source:
                 data.source ||
                 null,
+
+              time: new Date().toLocaleTimeString(
+                [],
+                {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                }
+              ),
             },
           ]
         );
 
-        // Save chat ID if backend sends one
+        // Save chat ID
         if (data.chatId) {
-          setCurrentChatId(
-            data.chatId
-          );
+          setCurrentChatId(data.chatId);
         }
+
+        // IMPORTANT:
+        // Refresh sidebar so new chat appears
+        await fetchConversations();
       }
 
       // =================================================
@@ -193,19 +277,14 @@ export default function ChatInterface() {
         );
       }
     } catch (error) {
-      console.error(
-        "Chat error:",
-        error
-      );
+      console.error("Chat error:", error);
 
-      // Network/server error
       setMessages(
         (previousMessages) => [
           ...previousMessages,
 
           {
             sender: "bot",
-
             text:
               "Network error connecting to the server.",
           },
@@ -235,11 +314,79 @@ export default function ChatInterface() {
   };
 
   // =====================================================
-  // CLEAR CHAT
+  // CLEAR CURRENT CHAT
   // =====================================================
 
-  const handleClearChat = () => {
-    setMessages([]);
+  const handleClearChat = async () => {
+    // If there is no saved conversation
+    if (!currentChatId) {
+      setMessages([
+        {
+          sender: "bot",
+          text:
+            "Hello! Ask me anything based on the documents uploaded by the admin.",
+        },
+      ]);
+
+      return;
+    }
+
+    try {
+      console.log(
+        "Deleting conversation:",
+        currentChatId
+      );
+
+      const response = await fetch(
+        `http://localhost:5000/api/conversations/${currentChatId}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      const data = await response.json();
+
+      console.log(
+        "Delete response:",
+        data
+      );
+
+      if (response.ok) {
+        // Remove from sidebar
+        setConversations(
+          (previousConversations) =>
+            previousConversations.filter(
+              (conversation) =>
+                conversation.chatId !==
+                currentChatId
+            )
+        );
+
+        // Reset current chat
+        setCurrentChatId(null);
+
+        // Reset messages
+        setMessages([
+          {
+            sender: "bot",
+            text:
+              "Hello! Ask me anything based on the documents uploaded by the admin.",
+          },
+        ]);
+
+        setInput("");
+      } else {
+        console.error(
+          "Failed to delete conversation:",
+          data.error
+        );
+      }
+    } catch (error) {
+      console.error(
+        "Clear chat error:",
+        error
+      );
+    }
   };
 
   // =====================================================
@@ -287,24 +434,28 @@ export default function ChatInterface() {
 
                 <div
                   key={
-                    conversation._id
+                    conversation.chatId
                   }
+
                   className={`conv-item ${
                     currentChatId ===
-                    conversation._id
+                    conversation.chatId
                       ? "active"
                       : ""
                   }`}
+
                   onClick={() =>
-                    setCurrentChatId(
-                      conversation._id
+                    loadConversation(
+                      conversation.chatId
                     )
                   }
                 >
+
                   <span>
                     {conversation.title ||
                       "Untitled Chat"}
                   </span>
+
                 </div>
 
               )
@@ -329,6 +480,8 @@ export default function ChatInterface() {
         </button>
 
       </aside>
+      
+      
 
 
       {/* =================================================
@@ -336,6 +489,8 @@ export default function ChatInterface() {
       ================================================= */}
 
       <main className="chat-main">
+
+        
 
         {/* Header */}
 
@@ -377,36 +532,36 @@ export default function ChatInterface() {
                 )}
 
 
-                {/* Message */}
+{/* Message */}
 
-                <div
-                  className={`message-bubble ${message.sender}`}
-                >
+<div
+  className={`message-bubble ${message.sender}`}
+>
+  {message.sender === "bot" ? (
+    <ReactMarkdown>
+      {message.text || ""}
+    </ReactMarkdown>
+  ) : (
+    <p>{message.text}</p>
+  )}
 
-                  <p>
-                    {message.text}
-                  </p>
+  {/* Time */}
 
+  {message.time && (
+    <span className="time">
+      {message.time}
+    </span>
+  )}
 
-                  {/* Time */}
+  {/* Source */}
 
-                  {message.time && (
-                    <span className="time">
-                      {message.time}
-                    </span>
-                  )}
-
-
-                  {/* Source */}
-
-                  {message.source && (
-                    <div className="source-tag">
-                      Source:{" "}
-                      {message.source}
-                    </div>
-                  )}
-
-                </div>
+  {message.source && (
+    <div className="source-tag">
+      Source:{" "}
+      {message.source}
+    </div>
+  )}
+</div>
 
               </div>
 
@@ -424,7 +579,7 @@ export default function ChatInterface() {
               </div>
 
               <div className="message-bubble bot">
-                Thinking...
+                <ReactMarkdown>Thinking...</ReactMarkdown>
               </div>
 
             </div>
@@ -540,8 +695,10 @@ export default function ChatInterface() {
             )
 
           )}
+          
 
         </div>
+        
 
 
         {/* View all */}

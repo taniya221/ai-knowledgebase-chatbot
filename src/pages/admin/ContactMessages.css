@@ -1,0 +1,205 @@
+
+/* Contact Messages Page */
+
+.contact-messages-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.contact-messages-main {
+  flex: 1;
+  padding: 30px;
+  margin-left: 250px;
+}
+
+.contact-messages-page h2 {
+  font-size: 26px;
+  color: #1e293b;
+  margin-bottom: 25px;
+}
+
+.contact-messages-error {
+  color: #dc2626;
+  margin-bottom: 15px;
+}
+
+.contact-messages-empty {
+  color: #64748b;
+  font-size: 15px;
+}
+
+.contact-messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.contact-message-card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  padding: 22px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+}
+
+.contact-message-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 15px;
+}
+
+.contact-message-header h3 {
+  font-size: 19px;
+  color: #0f172a;
+  margin: 0;
+}
+
+.contact-message-header span {
+  font-size: 12px;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 5px 10px;
+  border-radius: 20px;
+  text-transform: capitalize;
+}
+
+.contact-message-card p {
+  color: #475569;
+  font-size: 14px;
+  line-height: 1.6;
+  margin: 10px 0;
+  overflow-wrap: anywhere;
+}
+
+.contact-message-card a {
+  color: #2563eb;
+  text-decoration: none;
+}
+
+.contact-message-card a:hover {
+  text-decoration: underline;
+}
+
+.contact-message-card small {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 15px;
+}
+
+.contact-message-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.contact-message-actions button {
+  padding: 9px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #334155;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.contact-message-actions button:hover {
+  background: #f1f5f9;
+}
+
+.contact-message-actions .delete-message-btn {
+  color: #dc2626;
+  border-color: #fecaca;
+}
+
+.contact-message-actions .delete-message-btn:hover {
+  background: #fef2f2;
+}
+
+.contact-message-actions button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive layout */
+
+@media (max-width: 600px) {
+  .contact-messages-main {
+    margin-left: 100;
+    padding: 18px;
+  }
+
+  .contact-message-card {
+    padding: 16px;
+  }
+
+  .contact-message-header {
+    align-items: flex-start;
+  }
+
+  .contact-message-actions {
+    flex-direction: column;
+  }
+
+  .contact-message-actions button {
+    width: 100%;
+  }
+}
+
+.contact-messages-layout {
+  display: flex;
+  min-height: 100vh;
+  background-color: #f8fafc;
+}
+
+.contact-messages-main {
+  flex: 1;
+  min-width: 0;
+  padding: 30px;
+  margin-left: 250px;
+  box-sizing: border-box;
+}
+
+.contact-messages-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .contact-messages-main {
+    margin-left: 0;
+    padding: 18px;
+  }
+}
+
+.contact-messages-layout {
+  display: flex !important;
+  width: 100%;
+  min-height: 100vh;
+  align-items: flex-start;
+}
+
+.contact-messages-layout > .admin-sidebar {
+  flex-shrink: 0;
+}
+
+.contact-messages-main {
+  flex: 1;
+  min-width: 0;
+  margin-left: 0 !important;
+  padding: 30px;
+  display: block;
+  text-align: left;
+}
+
+.contact-messages-page {
+  width: 100%;
+  max-width: none !important;
+  margin: 0 !important;
+  text-align: left;
+}

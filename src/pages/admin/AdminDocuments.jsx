@@ -1,7 +1,7 @@
-
 import React, { useState, useRef, useEffect } from "react";
 import AdminSidebar from "../../components/AdminSidebar";
 import "./AdminDocuments.css";
+
 
 function AdminDocuments() {
   const fileInputRef = useRef(null);
@@ -89,7 +89,7 @@ function AdminDocuments() {
       setUploading(true);
 
       const response = await fetch(
-        "http://localhost:5000/api/documents",
+        "http://localhost:5000/api/documents/upload",
         {
           method: "POST",
           body: formData,
@@ -500,4 +500,3 @@ function AdminDocuments() {
 }
 
 export default AdminDocuments;
-

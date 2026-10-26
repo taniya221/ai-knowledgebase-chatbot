@@ -1,723 +1,892 @@
-import React, { useState, useRef } from "react";
-import {
-  Settings,
-  User,
-  Palette,
-  Bell,
-  Shield,
-  Database,
-  Cloud,
-  Server,
-  Upload,
-  Lock,
-  ChevronRight,
-  Save,
-  X
-} from "lucide-react";
+import React, { useState, useEffect } from "react";
+import AdminSidebar from "../../components/AdminSidebar";
 import { useTheme } from "./ThemeContext";
-
 import "./AdminSettings.css";
 
 function AdminSettings() {
-  const [activeTab, setActiveTab] = useState("General");
-  const fileInputRef = useRef(null);
 
-  const { theme, setTheme } = useTheme(); // Use global theme state
+  // =====================================
+  // GLOBAL THEME
+  // =====================================
 
-  const [statusMessage, setStatusMessage] = useState(null);
-  const [showPasswordModal, setShowPasswordModal] = useState(false);
-  const [passwordForm, setPasswordForm] = useState({
-    currentPassword: "",
-    newPassword: "",
-    confirmPassword: ""
-  });
+  const {
+    theme,
+    setTheme,
+    primaryColor,
+    setPrimaryColor
+  } = useTheme();
 
-  const [settings, setSettings] = useState({
-    appName: "InfoHub",
-    tagline: "Your Intelligent Knowledge Assistant",
-    description:
-      "An AI-powered knowledge base that helps you find information from your documents, with source references and daily updates.",
-    primaryColor: localStorage.getItem("app_color") || "purple",
-    twoFactor: localStorage.getItem("app_2fa") === "true",
-    logoUrl: null,
-    backupStatus: "Idle",
-    notifications: {
-      document: true,
-      highlight: true,
-      user: false,
-      system: true,
-    }
-  });
 
-  const [profile, setProfile] = useState({
-    name: "Admin",
-    email: "admin@infohub.com",
-  });
+  // =====================================
+  // GENERAL SETTINGS
+  // =====================================
 
-  const showNotificationBanner = (msg) => {
-    setStatusMessage(msg);
-    setTimeout(() => {
-      setStatusMessage(null);
-    }, 4000);
-  };
-
-  const handleChange = (e) => {
-    setSettings({
-      ...settings,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const handleProfileChange = (e) => {
-    setProfile({
-      ...profile,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const toggleNotification = (name) => {
-    setSettings({
-      ...settings,
-      notifications: {
-        ...settings.notifications,
-        [name]: !settings.notifications[name],
-      }
-    });
-    showNotificationBanner(`Notification preference updated.`);
-  };
-
-  const handleLogoUpload = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      const previewUrl = URL.createObjectURL(file);
-      setSettings({
-        ...settings,
-        logoUrl: previewUrl,
-      });
-      showNotificationBanner("Logo updated successfully!");
-    }
-  };
-
-  const handleSave = (section) => {
-    showNotificationBanner(`${section} settings saved successfully!`);
-  };
-
-  const handlePasswordUpdateSubmit = (e) => {
-    e.preventDefault();
-    if (!passwordForm.currentPassword || !passwordForm.newPassword || !passwordForm.confirmPassword) {
-      alert("Please fill in all password fields.");
-      return;
-    }
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      alert("New passwords do not match!");
-      return;
-    }
-    showNotificationBanner("Admin password changed successfully!");
-    setShowPasswordModal(false);
-    setPasswordForm({ currentPassword: "", newPassword: "", confirmPassword: "" });
-  };
-
-  const handleBackupTrigger = () => {
-    setSettings({ ...settings, backupStatus: "Backing up..." });
-    setTimeout(() => {
-      setSettings(prev => ({ ...prev, backupStatus: "Completed (Today)" }));
-      showNotificationBanner("Database backup snapshot created successfully!");
-    }, 2000);
-  };
-
-  const menuItems = [
-    { name: "General", icon: Settings },
-    { name: "Profile", icon: User },
-    { name: "Appearance", icon: Palette },
-    { name: "Notifications", icon: Bell },
-    { name: "Security", icon: Shield },
-    { name: "Database", icon: Database },
-    { name: "Backup & Restore", icon: Cloud },
-  ];
-
-  const isDark = theme === "Dark";
-
-  return (
-    <div className="settings-page" style={{ minHeight: "100vh" }}>
-      {statusMessage && (
-        <div style={{
-          background: "#4f46e5",
-          color: "#fff",
-          padding: "12px 20px",
-          borderRadius: "8px",
-          marginBottom: "20px",
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          fontWeight: "500",
-          boxShadow: "0 4px 12px rgba(0,0,0,0.1)"
-        }}>
-          <span>{statusMessage}</span>
-          <X size={18} style={{ cursor: "pointer" }} onClick={() => setStatusMessage(null)} />
-        </div>
-      )}
-
-      <div className="settings-header">
-        <div className="settings-title-box">
-          <div className="settings-main-icon">
-            <Settings size={30} />
-          </div>
-          <div>
-            <h1>Settings</h1>
-            <p>Manage your system preferences and application settings.</p>
-          </div>
-        </div>
-      </div>
-
-      <div className="settings-container">
-        <div className="settings-menu">
-          {menuItems.map((item) => {
-            const Icon = item.icon;
-            return (
-              <button
-                key={item.name}
-                className={`settings-menu-item ${
-                  activeTab === item.name ? "active" : ""
-                }`}
-                onClick={() => setActiveTab(item.name)}
-              >
-                <Icon size={20} />
-                <span>{item.name}</span>
-                {activeTab === item.name && (
-                  <ChevronRight size={17} className="menu-arrow" />
-                )}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="settings-content">
-          {activeTab === "General" && (
-            <>
-              <div className="settings-card general-card">
-                <div className="card-header">
-                  <div>
-                    <h2>General Settings</h2>
-                    <p>Update your application name, description and basic information.</p>
-                  </div>
-                </div>
-
-                <div className="general-layout">
-                  <div className="general-form">
-                    <div className="form-row">
-                      <div className="form-group">
-                        <label>Application Name</label>
-                        <input
-                          type="text"
-                          name="appName"
-                          value={settings.appName}
-                          onChange={handleChange}
-                        />
-                      </div>
-                      <div className="form-group">
-                        <label>Tagline</label>
-                        <input
-                          type="text"
-                          name="tagline"
-                          value={settings.tagline}
-                          onChange={handleChange}
-                        />
-                      </div>
-                    </div>
-
-                    <div className="form-group">
-                      <label>Description</label>
-                      <textarea
-                        name="description"
-                        value={settings.description}
-                        onChange={handleChange}
-                        rows="5"
-                      />
-                    </div>
-                  </div>
-
-                  <div className="logo-section">
-                    <div className="logo-preview">
-                      <div className="logo-symbol">
-                        {settings.logoUrl ? (
-                          <img 
-                            src={settings.logoUrl} 
-                            alt="Logo Preview" 
-                            style={{ width: "100%", height: "100%", objectFit: "cover", borderRadius: "8px" }} 
-                          />
-                        ) : (
-                          <Settings size={42} />
-                        )}
-                      </div>
-                      <h3>{settings.appName}</h3>
-                      
-                      <input 
-                        type="file" 
-                        ref={fileInputRef} 
-                        onChange={handleLogoUpload} 
-                        accept="image/png, image/jpeg" 
-                        style={{ display: "none" }} 
-                      />
-                      
-                      <button className="change-logo" onClick={() => fileInputRef.current.click()}>
-                        <Upload size={16} />
-                        Change Logo
-                      </button>
-                      <p>Recommended size: 200×200px</p>
-                      <small>PNG, JPG</small>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="card-actions">
-                  <button className="cancel-btn" onClick={() => showNotificationBanner("Changes discarded.")}>
-                    <X size={17} />
-                    Cancel
-                  </button>
-                  <button className="save-btn" onClick={() => handleSave("General")}>
-                    <Save size={17} />
-                    Save Changes
-                  </button>
-                </div>
-              </div>
-
-              <div className="settings-grid">
-                <div className="settings-card">
-                  <div className="small-card-header">
-                    <Server size={23} />
-                    <div>
-                      <h3>System Information</h3>
-                      <p>View and manage system details.</p>
-                    </div>
-                  </div>
-                  <div className="system-info">
-                    <div>
-                      <span>Current Version</span>
-                      <strong>v1.0.0</strong>
-                    </div>
-                    <div>
-                      <span>Database</span>
-                      <strong>MongoDB Atlas</strong>
-                    </div>
-                    <div>
-                      <span>Environment</span>
-                      <strong>Development</strong>
-                    </div>
-                    <div>
-                      <span>Last Updated</span>
-                      <strong>Sep 15, 2026</strong>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="settings-card">
-                  <div className="small-card-header">
-                    <Palette size={23} />
-                    <div>
-                      <h3>Appearance</h3>
-                      <p>Customize the look and feel of your dashboard.</p>
-                    </div>
-                  </div>
-                  <div className="appearance-section">
-                    <label>Theme</label>
-                    <div className="theme-buttons">
-                      {["Light", "Dark", "System"].map((item) => (
-                        <button
-                          key={item}
-                          className={theme === item ? "selected" : ""}
-                          onClick={() => {
-                            setTheme(item);
-                            showNotificationBanner(`Theme changed to ${item}`);
-                          }}
-                        >
-                          {item}
-                        </button>
-                      ))}
-                    </div>
-
-                    <label>Primary Color</label>
-                    <div className="color-options">
-                      {["purple", "blue", "green", "orange", "pink"].map((color) => (
-                        <span
-                          key={color}
-                          className={`color ${color} ${settings.primaryColor === color ? "active-ring" : ""}`}
-                          onClick={() => {
-                            setSettings({ ...settings, primaryColor: color });
-                            localStorage.setItem("app_color", color);
-                            showNotificationBanner(`Primary color updated`);
-                          }}
-                        />
-                      ))}
-                    </div>
-                  </div>
-                </div>
-
-                <div className="settings-card">
-                  <div className="small-card-header">
-                    <Bell size={23} />
-                    <div>
-                      <h3>Notifications</h3>
-                      <p>Manage what notifications you want to receive.</p>
-                    </div>
-                  </div>
-                  <div className="notification-list">
-                    <NotificationRow
-                      title="New document uploaded"
-                      enabled={settings.notifications.document}
-                      onClick={() => toggleNotification("document")}
-                    />
-                    <NotificationRow
-                      title="New highlight added"
-                      enabled={settings.notifications.highlight}
-                      onClick={() => toggleNotification("highlight")}
-                    />
-                    <NotificationRow
-                      title="New user registered"
-                      enabled={settings.notifications.user}
-                      onClick={() => toggleNotification("user")}
-                    />
-                    <NotificationRow
-                      title="System updates"
-                      enabled={settings.notifications.system}
-                      onClick={() => toggleNotification("system")}
-                    />
-                  </div>
-                </div>
-
-                <div className="settings-card">
-                  <div className="small-card-header">
-                    <Shield size={23} />
-                    <div>
-                      <h3>Security</h3>
-                      <p>Keep your account and data secure.</p>
-                    </div>
-                  </div>
-                  <div className="security-list">
-                    <div className="security-row">
-                      <div>
-                        <span>Change Admin Password</span>
-                      </div>
-                      <button className="outline-btn" onClick={() => setShowPasswordModal(true)}>
-                        <Lock size={15} />
-                        Update Password
-                      </button>
-                    </div>
-
-                    <div className="security-row">
-                      <div>
-                        <span>Two-Factor Authentication</span>
-                      </div>
-                      <div className="two-factor" onClick={() => {
-                        const newVal = !settings.twoFactor;
-                        setSettings({ ...settings, twoFactor: newVal });
-                        localStorage.setItem("app_2fa", newVal);
-                        showNotificationBanner(`2FA is now ${newVal ? "Enabled" : "Disabled"}`);
-                      }} style={{ cursor: 'pointer' }}>
-                        <span>{settings.twoFactor ? "Enabled" : "Disabled"}</span>
-                        <div className={`toggle ${settings.twoFactor ? "on" : "disabled"}`}>
-                          <span></span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </>
-          )}
-
-          {activeTab === "Profile" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Admin Profile</h2>
-                <p>Manage your administrator account information.</p>
-              </div>
-
-              <div className="profile-avatar">
-                {profile.name ? profile.name.charAt(0).toUpperCase() : "A"}
-              </div>
-
-              <div className="form-group">
-                <label>Admin Name</label>
-                <input
-                  type="text"
-                  name="name"
-                  value={profile.name}
-                  onChange={handleProfileChange}
-                />
-              </div>
-
-              <div className="form-group">
-                <label>Email Address</label>
-                <input
-                  type="email"
-                  name="email"
-                  value={profile.email}
-                  onChange={handleProfileChange}
-                />
-              </div>
-
-              <button className="save-btn" onClick={() => handleSave("Profile")}>
-                <Save size={17} />
-                Save Profile
-              </button>
-            </div>
-          )}
-
-          {activeTab === "Appearance" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Appearance Settings</h2>
-                <p>Customize the appearance of your admin dashboard.</p>
-              </div>
-
-              <h3 className="section-title">Theme</h3>
-              <div className="theme-large">
-                {["Light", "Dark", "System"].map((item) => (
-                  <button
-                    key={item}
-                    className={theme === item ? "selected" : ""}
-                    onClick={() => {
-                      setTheme(item);
-                      showNotificationBanner(`Theme set to ${item}`);
-                    }}
-                  >
-                    <Palette size={22} />
-                    {item}
-                  </button>
-                ))}
-              </div>
-
-              <h3 className="section-title" style={{ marginTop: "2rem" }}>Primary Accent Color</h3>
-              <div className="color-options" style={{ display: "flex", gap: "12px" }}>
-                {["purple", "blue", "green", "orange", "pink"].map((color) => (
-                  <span
-                    key={color}
-                    className={`color ${color} ${settings.primaryColor === color ? "active-ring" : ""}`}
-                    onClick={() => {
-                      setSettings({ ...settings, primaryColor: color });
-                      localStorage.setItem("app_color", color);
-                      showNotificationBanner(`Accent color changed`);
-                    }}
-                    style={{ width: "35px", height: "35px", borderRadius: "50%", cursor: "pointer", display: "inline-block" }}
-                  />
-                ))}
-              </div>
-
-              <div style={{ marginTop: "2rem" }}>
-                <button className="save-btn" onClick={() => handleSave("Appearance")}>
-                  <Save size={17} />
-                  Save Appearance
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Notifications" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Notification Settings</h2>
-                <p>Choose which system notifications you receive.</p>
-              </div>
-
-              <div className="large-notifications">
-                <NotificationRow
-                  title="New document uploaded"
-                  enabled={settings.notifications.document}
-                  onClick={() => toggleNotification("document")}
-                />
-                <NotificationRow
-                  title="New highlight added"
-                  enabled={settings.notifications.highlight}
-                  onClick={() => toggleNotification("highlight")}
-                />
-                <NotificationRow
-                  title="New user registered"
-                  enabled={settings.notifications.user}
-                  onClick={() => toggleNotification("user")}
-                />
-                <NotificationRow
-                  title="System updates"
-                  enabled={settings.notifications.system}
-                  onClick={() => toggleNotification("system")}
-                />
-              </div>
-
-              <div style={{ marginTop: "2rem" }}>
-                <button className="save-btn" onClick={() => handleSave("Notifications")}>
-                  <Save size={17} />
-                  Save Notifications
-                </button>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Security" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Security Settings</h2>
-                <p>Manage your admin account security.</p>
-              </div>
-
-              <div className="security-big">
-                <div>
-                  <Lock size={25} />
-                  <div>
-                    <h3>Admin Password</h3>
-                    <p>Change your administrator password.</p>
-                  </div>
-                </div>
-                <button className="outline-btn" onClick={() => setShowPasswordModal(true)}>
-                  Update Password
-                </button>
-              </div>
-
-              <div className="security-big" style={{ marginTop: "1rem" }}>
-                <div>
-                  <Shield size={25} />
-                  <div>
-                    <h3>Two-Factor Authentication</h3>
-                    <p>Add an extra layer of protection to your account.</p>
-                  </div>
-                </div>
-                <div 
-                  className={`toggle ${settings.twoFactor ? "on" : "disabled"}`} 
-                  onClick={() => {
-                    const newVal = !settings.twoFactor;
-                    setSettings({ ...settings, twoFactor: newVal });
-                    localStorage.setItem("app_2fa", newVal);
-                    showNotificationBanner(`2FA is now ${newVal ? "Enabled" : "Disabled"}`);
-                  }}
-                  style={{ cursor: "pointer" }}
-                >
-                  <span></span>
-                </div>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Database" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Database</h2>
-                <p>View your application database configuration.</p>
-              </div>
-
-              <div className="database-box">
-                <Database size={35} />
-                <h3>MongoDB Atlas</h3>
-                <p>Your application is actively connected to MongoDB Atlas clusters.</p>
-                <span className="connected">● Connected</span>
-              </div>
-            </div>
-          )}
-
-          {activeTab === "Backup & Restore" && (
-            <div className="settings-card full-card">
-              <div className="card-header">
-                <h2>Backup & Restore</h2>
-                <p>Backup and restore your data securely.</p>
-              </div>
-
-              <div className="backup-box">
-                <Cloud size={40} />
-                <h3>Database Backup</h3>
-                <p>Create a backup snapshot of your documents, users, and system highlights.</p>
-                <p style={{ fontSize: "13px", color: "#666", marginBottom: "15px" }}>Status: <strong>{settings.backupStatus}</strong></p>
-                <button className="save-btn" onClick={handleBackupTrigger}>
-                  Create Backup
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {showPasswordModal && (
-        <div style={{
-          position: "fixed",
-          top: 0, left: 0, right: 0, bottom: 0,
-          background: "rgba(0,0,0,0.5)",
-          display: "flex",
-          justifyContent: "center",
-          alignItems: "center",
-          zIndex: 1000
-        }}>
-          <div style={{
-            background: isDark ? "#1e1e1e" : "#fff",
-            color: isDark ? "#fff" : "#000",
-            padding: "30px",
-            borderRadius: "12px",
-            width: "400px",
-            boxShadow: "0 10px 25px rgba(0,0,0,0.2)"
-          }}>
-            <h3>Update Admin Password</h3>
-            <form onSubmit={handlePasswordUpdateSubmit} style={{ marginTop: "15px" }}>
-              <div className="form-group" style={{ marginBottom: "15px" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>Current Password</label>
-                <input
-                  type="password"
-                  required
-                  value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-                />
-              </div>
-              <div className="form-group" style={{ marginBottom: "15px" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>New Password</label>
-                <input
-                  type="password"
-                  required
-                  value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-                />
-              </div>
-              <div className="form-group" style={{ marginBottom: "20px" }}>
-                <label style={{ display: "block", marginBottom: "5px" }}>Confirm New Password</label>
-                <input
-                  type="password"
-                  required
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  style={{ width: "100%", padding: "8px", borderRadius: "4px", border: "1px solid #ccc" }}
-                />
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "10px" }}>
-                <button
-                  type="button"
-                  className="cancel-btn"
-                  onClick={() => setShowPasswordModal(false)}
-                  style={{ padding: "8px 16px", cursor: "pointer" }}
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="save-btn"
-                  style={{ padding: "8px 16px", cursor: "pointer" }}
-                >
-                  Update Password
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-    </div>
+  const [appName, setAppName] = useState(
+    localStorage.getItem("appName") || "InfoHub"
   );
-}
 
-function NotificationRow({ title, enabled, onClick }) {
+  const [email, setEmail] = useState(
+    localStorage.getItem("systemEmail") ||
+      "admin@infohub.com"
+  );
+
+  const [supportEmail, setSupportEmail] = useState(
+    localStorage.getItem("supportEmail") ||
+      "support@infohub.com"
+  );
+
+  const [timezone, setTimezone] = useState(
+    localStorage.getItem("timezone") ||
+      "Asia/Kolkata"
+  );
+
+
+  // =====================================
+  // NOTIFICATIONS
+  // =====================================
+
+  const [newDocumentNotification, setNewDocumentNotification] =
+    useState(
+      localStorage.getItem("newDocumentNotification") !== "false"
+    );
+
+  const [userNotification, setUserNotification] =
+    useState(
+      localStorage.getItem("userNotification") !== "false"
+    );
+
+  const [systemNotification, setSystemNotification] =
+    useState(
+      localStorage.getItem("systemNotification") !== "false"
+    );
+
+
+// =====================================
+// SAVE GENERAL SETTINGS
+// =====================================
+
+const handleGeneralSave = () => {
+  localStorage.setItem("appName", appName);
+  localStorage.setItem("systemEmail", email);
+  localStorage.setItem("supportEmail", supportEmail);
+  localStorage.setItem("timezone", timezone);
+
+  // Update the application name in the sidebar
+  window.dispatchEvent(new Event("appNameUpdated"));
+
+  alert("General settings updated successfully!");
+};
+
+  // =====================================
+  // SAVE THEME SETTINGS
+  // =====================================
+
+  const handleThemeSave = () => {
+
+    // Theme and primary color are already
+    // updated immediately through ThemeContext.
+
+    localStorage.setItem(
+      "app_theme",
+      theme
+    );
+
+    localStorage.setItem(
+      "app_color",
+      primaryColor
+    );
+
+    alert(
+      "Theme settings updated successfully!"
+    );
+  };
+
+
+  // =====================================
+  // NOTIFICATION 1
+  // =====================================
+
+  const saveNotificationSettings = async (documentValue, userValue, systemValue) => {
+    try {
+      const response = await fetch(
+        "http://localhost:5000/api/notification-settings",
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            newDocumentNotification: documentValue,
+            userNotification: userValue,
+            systemNotification: systemValue,
+          }),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to save notification settings");
+      }
+
+      console.log("Notification settings saved successfully");
+    } catch (error) {
+      console.error("Error saving notification settings:", error);
+      alert("Failed to save notification settings. Please try again.");
+    }
+  };
+
+  const toggleDocumentNotification = () => {
+    const newValue = !newDocumentNotification;
+    setNewDocumentNotification(newValue);
+    localStorage.setItem("newDocumentNotification", String(newValue));
+
+    saveNotificationSettings(
+      newValue,
+      userNotification,
+      systemNotification
+    );
+  };
+
+  const toggleUserNotification = () => {
+    const newValue = !userNotification;
+    setUserNotification(newValue);
+    localStorage.setItem("userNotification", String(newValue));
+
+    saveNotificationSettings(
+      newDocumentNotification,
+      newValue,
+      systemNotification
+    );
+  };
+
+  const toggleSystemNotification = () => {
+  const newValue = !systemNotification;
+  setSystemNotification(newValue);
+  localStorage.setItem("systemNotification", String(newValue));
+
+  saveNotificationSettings(
+    newDocumentNotification,
+    userNotification,
+    newValue
+  );
+};
+
+// =====================================
+// CREATE SYSTEM UPDATE NOTIFICATION
+// =====================================
+
+const createSystemUpdate = async () => {
+  try {
+    // Get the latest saved setting from the backend
+    const settingsResponse = await fetch(
+      "http://localhost:5000/api/notification-settings"
+    );
+
+    if (!settingsResponse.ok) {
+      throw new Error("Could not load notification settings");
+    }
+
+    const settings = await settingsResponse.json();
+
+    if (settings.systemNotification === false) {
+      alert("System Updates are OFF. No notification was created.");
+      return;
+    }
+
+    const response = await fetch(
+      "http://localhost:5000/api/notifications/system-update",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: "InfoHub System Update",
+          message:
+            "InfoHub has received a system update. Check out the latest improvements!",
+        }),
+      }
+    );
+
+    const data = await response.json();
+
+    if (!response.ok) {
+      throw new Error(data.message || "Failed to create notification");
+    }
+
+    if (data.created) {
+      alert("System update notification created successfully!");
+      window.dispatchEvent(new Event("notificationsUpdated"));
+    } else {
+      alert(data.message || "Notification was not created.");
+    }
+  } catch (error) {
+    console.error("System update error:", error);
+    alert("Failed to create system update notification. Check the backend server.");
+  }
+};
+
+
+
+  // =====================================
+  // RETURN
+  // =====================================
+
   return (
-    <div className="notification-row">
-      <span>{title}</span>
-      <button
-        type="button"
-        className={`toggle ${enabled ? "on" : ""}`}
-        onClick={onClick}
-      >
-        <span></span>
-      </button>
+
+    <div className="admin-settings-page">
+
+      {/* =================================
+          SIDEBAR
+      ================================= */}
+
+      <AdminSidebar />
+
+
+      {/* =================================
+          MAIN CONTENT
+      ================================= */}
+
+      <main className="admin-settings-main">
+
+
+        {/* =================================
+            HEADER
+        ================================= */}
+
+        <div className="settings-header">
+
+          <div className="settings-title-icon">
+            ⚙
+          </div>
+
+          <div>
+
+            <h1>
+              Admin Settings
+            </h1>
+
+            <p>
+              Manage your system settings and preferences
+            </p>
+
+          </div>
+
+        </div>
+
+
+        {/* =================================
+            TOP GRID
+        ================================= */}
+
+        <div className="settings-top-grid">
+
+
+          {/* =================================
+              GENERAL SETTINGS
+          ================================= */}
+
+          <div className="settings-card">
+
+            <h2>
+              General Settings
+            </h2>
+
+            <p className="settings-description">
+              Basic system configuration
+            </p>
+
+
+            {/* APPLICATION NAME */}
+
+            <div className="settings-form-group">
+
+              <label>
+                Application Name
+              </label>
+
+              <input
+                type="text"
+                value={appName}
+                onChange={(e) =>
+                  setAppName(e.target.value)
+                }
+              />
+
+            </div>
+
+
+            {/* SYSTEM EMAIL */}
+
+            <div className="settings-form-group">
+
+              <label>
+                System Email
+              </label>
+
+              <input
+                type="email"
+                value={email}
+                onChange={(e) =>
+                  setEmail(e.target.value)
+                }
+              />
+
+            </div>
+
+
+            {/* SUPPORT EMAIL */}
+
+            <div className="settings-form-group">
+
+              <label>
+                Support Email
+              </label>
+
+              <input
+                type="email"
+                value={supportEmail}
+                onChange={(e) =>
+                  setSupportEmail(e.target.value)
+                }
+              />
+
+            </div>
+
+
+            {/* TIMEZONE */}
+
+            <div className="settings-form-group">
+
+              <label>
+                Timezone
+              </label>
+
+              <select
+                value={timezone}
+                onChange={(e) =>
+                  setTimezone(e.target.value)
+                }
+              >
+
+                <option value="Asia/Kolkata">
+                  Asia/Kolkata
+                </option>
+
+                <option value="Asia/Dubai">
+                  Asia/Dubai
+                </option>
+
+                <option value="Europe/London">
+                  Europe/London
+                </option>
+
+                <option value="America/New_York">
+                  America/New_York
+                </option>
+
+              </select>
+
+            </div>
+
+
+            {/* SAVE */}
+
+            <button
+              type="button"
+              className="save-button"
+              onClick={handleGeneralSave}
+            >
+              💾 Save Changes
+            </button>
+
+          </div>
+
+
+          {/* =================================
+              THEME SETTINGS
+          ================================= */}
+
+          <div className="settings-card">
+
+            <h2>
+              Theme Settings
+            </h2>
+
+            <p className="settings-description">
+              Customize the application appearance
+            </p>
+
+
+            {/* THEME MODE */}
+
+            <label className="theme-label">
+              Theme Mode
+            </label>
+
+
+            <div className="theme-options">
+
+
+              {/* LIGHT */}
+
+              <button
+                type="button"
+                className={
+                  theme === "Light"
+                    ? "theme-option active"
+                    : "theme-option"
+                }
+                onClick={() =>
+                  setTheme("Light")
+                }
+              >
+
+                <span className="theme-icon">
+                  ☀
+                </span>
+
+                <span>
+                  Light
+                </span>
+
+              </button>
+
+
+              {/* DARK */}
+
+              <button
+                type="button"
+                className={
+                  theme === "Dark"
+                    ? "theme-option active"
+                    : "theme-option"
+                }
+                onClick={() =>
+                  setTheme("Dark")
+                }
+              >
+
+                <span className="theme-icon">
+                  ◐
+                </span>
+
+                <span>
+                  Dark
+                </span>
+
+              </button>
+
+
+              {/* SYSTEM */}
+
+              <button
+                type="button"
+                className={
+                  theme === "System"
+                    ? "theme-option active"
+                    : "theme-option"
+                }
+                onClick={() =>
+                  setTheme("System")
+                }
+              >
+
+                <span className="theme-icon">
+                  🖥
+                </span>
+
+                <span>
+                  System
+                </span>
+
+              </button>
+
+            </div>
+
+
+            {/* PRIMARY COLOR */}
+
+            <label className="theme-label">
+              Primary Color
+            </label>
+
+
+            <div className="color-options">
+
+
+              {/* PURPLE */}
+
+              <button
+                type="button"
+                aria-label="Purple"
+                className={
+                  primaryColor === "#4f46e5"
+                    ? "color-circle purple active"
+                    : "color-circle purple"
+                }
+                onClick={() =>
+                  setPrimaryColor("#4f46e5")
+                }
+              />
+
+
+              {/* BLUE */}
+
+              <button
+                type="button"
+                aria-label="Blue"
+                className={
+                  primaryColor === "#2196f3"
+                    ? "color-circle blue active"
+                    : "color-circle blue"
+                }
+                onClick={() =>
+                  setPrimaryColor("#2196f3")
+                }
+              />
+
+
+              {/* GREEN */}
+
+              <button
+                type="button"
+                aria-label="Green"
+                className={
+                  primaryColor === "#14b8a6"
+                    ? "color-circle green active"
+                    : "color-circle green"
+                }
+                onClick={() =>
+                  setPrimaryColor("#14b8a6")
+                }
+              />
+
+
+              {/* ORANGE */}
+
+              <button
+                type="button"
+                aria-label="Orange"
+                className={
+                  primaryColor === "#f97316"
+                    ? "color-circle orange active"
+                    : "color-circle orange"
+                }
+                onClick={() =>
+                  setPrimaryColor("#f97316")
+                }
+              />
+
+
+              {/* RED */}
+
+              <button
+                type="button"
+                aria-label="Red"
+                className={
+                  primaryColor === "#ef4444"
+                    ? "color-circle red active"
+                    : "color-circle red"
+                }
+                onClick={() =>
+                  setPrimaryColor("#ef4444")
+                }
+              />
+
+
+              {/* VIOLET */}
+
+              <button
+                type="button"
+                aria-label="Violet"
+                className={
+                  primaryColor === "#7c3aed"
+                    ? "color-circle violet active"
+                    : "color-circle violet"
+                }
+                onClick={() =>
+                  setPrimaryColor("#7c3aed")
+                }
+              />
+
+            </div>
+
+
+            {/* SAVE THEME */}
+
+            <button
+              type="button"
+              className="save-button"
+              onClick={handleThemeSave}
+            >
+              🎨 Save Changes
+            </button>
+
+          </div>
+
+        </div>
+
+
+        {/* =================================
+            BOTTOM GRID
+        ================================= */}
+
+        <div className="settings-bottom-grid">
+
+
+          {/* =================================
+              NOTIFICATION SETTINGS
+          ================================= */}
+
+          <div className="settings-card">
+
+
+            <div className="card-heading">
+
+              <div className="card-heading-icon">
+                🔔
+              </div>
+
+              <div>
+
+                <h2>
+                  Notification Settings
+                </h2>
+
+                <p>
+                  Manage system notifications
+                </p>
+
+              </div>
+
+            </div>
+
+
+            {/* DOCUMENT NOTIFICATION */}
+
+            <div className="notification-row">
+
+              <div>
+
+                <strong>
+                  New Document Notifications
+                </strong>
+
+                <p>
+                  Get notified when new documents are uploaded
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                className={
+                  newDocumentNotification
+                    ? "toggle active"
+                    : "toggle"
+                }
+                onClick={
+                  toggleDocumentNotification
+                }
+              >
+
+                <span></span>
+
+              </button>
+
+            </div>
+
+
+            {/* USER NOTIFICATION */}
+
+            <div className="notification-row">
+
+              <div>
+
+                <strong>
+                  User Registration Notifications
+                </strong>
+
+                <p>
+                  Get notified when new users register
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                className={
+                  userNotification
+                    ? "toggle active"
+                    : "toggle"
+                }
+                onClick={
+                  toggleUserNotification
+                }
+              >
+
+                <span></span>
+
+              </button>
+
+            </div>
+
+
+            {/* SYSTEM NOTIFICATION */}
+
+            <div className="notification-row">
+
+              <div>
+
+                <strong>
+                  System Updates
+                </strong>
+
+                <p>
+                  Get notified about system updates and maintenance
+                </p>
+
+              </div>
+
+              <button
+                type="button"
+                className={
+                  systemNotification
+                    ? "toggle active"
+                    : "toggle"
+                }
+                onClick={
+                  toggleSystemNotification
+                }
+              >
+
+                <span></span>
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          {/* =================================
+              SYSTEM INFORMATION
+          ================================= */}
+
+          <div className="settings-card system-card">
+
+
+            <div className="card-heading">
+
+              <div className="card-heading-icon">
+                ⓘ
+              </div>
+
+              <div>
+
+                <h2>
+                  System Information
+                </h2>
+
+                <p>
+                  Current system details
+                </p>
+
+              </div>
+
+            </div>
+            
+<button
+  type="button"
+  className="save-button"
+  onClick={createSystemUpdate}
+  disabled={!systemNotification}
+>
+  Create System Update Notification
+</button>
+
+
+
+            {/* VERSION */}
+
+            <div className="system-info-row">
+
+              <span>
+                Application Version
+              </span>
+
+              <strong>
+                v1.0.0
+              </strong>
+
+            </div>
+
+
+            {/* BACKEND */}
+
+            <div className="system-info-row">
+
+              <span>
+                Backend URL
+              </span>
+
+              <strong>
+                http://localhost:5000
+              </strong>
+
+            </div>
+
+
+            {/* DATABASE */}
+
+            <div className="system-info-row">
+
+              <span>
+                Database
+              </span>
+
+              <strong>
+                MongoDB
+              </strong>
+
+            </div>
+
+
+            {/* ENVIRONMENT */}
+
+            <div className="system-info-row">
+
+              <span>
+                Environment
+              </span>
+
+              <strong>
+                Development
+              </strong>
+
+            </div>
+
+
+            {/* STATUS */}
+
+            <div className="system-info-row">
+
+              <span>
+                Status
+              </span>
+
+              <strong className="status-online">
+                ● Online
+              </strong>
+
+            </div>
+
+          </div>
+
+        </div>
+
+      </main>
+
     </div>
   );
 }

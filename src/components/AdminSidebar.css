@@ -1,19 +1,39 @@
+
+/* =====================================================
+   ADMIN SIDEBAR
+===================================================== */
+
 .admin-sidebar {
   width: 260px;
   min-width: 260px;
+  max-width: 260px;
+  flex: 0 0 260px;
+
   height: 100vh;
+  min-height: 100vh;
+
   background: #0b0f19;
-  color: white;
+  color: #ffffff;
+
   padding: 24px 16px;
+  box-sizing: border-box;
+
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-sizing: border-box;
+
   position: sticky;
   top: 0;
   left: 0;
+
   margin: 0;
+  overflow: visible;
+  z-index: 100;
 }
+
+/* =====================================================
+   SIDEBAR LOGO
+===================================================== */
 
 .sidebar-logo {
   display: flex;
@@ -26,11 +46,15 @@
 .logo-circle {
   width: 36px;
   height: 36px;
+  min-width: 36px;
+
   background: #7c3aed;
   border-radius: 8px;
+
   display: flex;
   align-items: center;
   justify-content: center;
+
   font-weight: bold;
   font-size: 18px;
 }
@@ -38,8 +62,12 @@
 .sidebar-logo h2 {
   margin: 0;
   font-size: 20px;
-  color: white;
+  color: #ffffff;
 }
+
+/* =====================================================
+   ADMIN PANEL LABEL
+===================================================== */
 
 .sidebar-admin {
   padding-left: 8px;
@@ -47,12 +75,16 @@
 }
 
 .sidebar-admin p {
+  margin: 0;
   font-size: 11px;
   color: #64748b;
   font-weight: 600;
   letter-spacing: 1px;
-  margin: 0;
 }
+
+/* =====================================================
+   NAVIGATION MENU
+===================================================== */
 
 .sidebar-menu {
   display: flex;
@@ -61,35 +93,366 @@
 }
 
 .menu-item {
-  text-decoration: none;
-  color: #94a3b8;
-  padding: 12px 14px;
-  border-radius: 10px;
+  width: 100%;
+  box-sizing: border-box;
+
   display: flex;
   align-items: center;
   gap: 12px;
-  cursor: pointer;
+
+  padding: 12px 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #94a3b8;
+
+  text-decoration: none;
+  font-family: inherit;
   font-size: 14px;
   font-weight: 500;
-  transition: all 0.2s ease;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .menu-item:hover {
-  background: rgba(255, 255, 255, 0.03);
+  background: rgba(255, 255, 255, 0.05);
   color: #f1f5f9;
 }
 
-.active-menu {
-  background: #7c3aed !important;
-  color: white !important;
+.menu-item.active-menu {
+  background: #7c3aed;
+  color: #ffffff;
 }
 
+.menu-item svg {
+  flex-shrink: 0;
+}
+
+/* =====================================================
+   NOTIFICATION BUTTON
+===================================================== */
+
+.sidebar-notification-container {
+  position: relative;
+  margin-top: 18px;
+}
+
+.notification-button {
+  width: 100%;
+  box-sizing: border-box;
+
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  padding: 12px 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #94a3b8;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.notification-button:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #f1f5f9;
+}
+
+/* =====================================================
+   NOTIFICATION BADGE
+===================================================== */
+
+.notification-badge {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-width: 20px;
+  height: 20px;
+
+  margin-left: auto;
+  padding: 0 6px;
+
+  border-radius: 10px;
+
+  background: #ef4444;
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* =====================================================
+   NOTIFICATION PANEL
+===================================================== */
+
+.notification-panel {
+  position: absolute;
+  left: calc(100% + 10px);
+  bottom: 0;
+
+  width: 330px;
+  max-width: calc(100vw - 290px);
+  max-height: 450px;
+
+  background: #111827;
+  border: 1px solid #1e293b;
+  border-radius: 12px;
+
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+
+  overflow: hidden;
+  z-index: 9999;
+}
+
+/* =====================================================
+   NOTIFICATION HEADER
+===================================================== */
+
+.notification-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+
+  padding: 14px 16px;
+
+  border-bottom: 1px solid #1e293b;
+}
+
+.notification-header strong {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.notification-header span {
+  color: #94a3b8;
+  font-size: 11px;
+}
+
+/* =====================================================
+   NOTIFICATION LIST
+===================================================== */
+
+.notification-list {
+  max-height: 390px;
+  overflow-y: auto;
+}
+
+/* =====================================================
+   NOTIFICATION ITEM
+===================================================== */
+
+.notification-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  padding: 14px;
+
+  border-bottom: 1px solid #1e293b;
+
+  cursor: pointer;
+
+  transition: background 0.2s ease;
+}
+
+.notification-item:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.notification-item.unread {
+  background: rgba(124, 58, 237, 0.08);
+}
+
+/* =====================================================
+   NOTIFICATION ICON
+===================================================== */
+
+.notification-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 30px;
+  min-width: 30px;
+  height: 30px;
+
+  border-radius: 8px;
+
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+/* =====================================================
+   NOTIFICATION CONTENT
+===================================================== */
+
+.notification-content {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.notification-content strong {
+  display: block;
+  margin-bottom: 4px;
+
+  color: #f1f5f9;
+  font-size: 13px;
+}
+
+.notification-content p {
+  margin: 0 0 5px;
+
+  color: #94a3b8;
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.notification-content small {
+  color: #64748b;
+  font-size: 10px;
+}
+
+/* =====================================================
+   NO NOTIFICATIONS
+===================================================== */
+
+.no-notifications {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  padding: 30px 20px;
+
+  color: #64748b;
+}
+
+.no-notifications p {
+  margin: 8px 0 0;
+  font-size: 12px;
+}
+
+/* =====================================================
+   LOGOUT SECTION
+===================================================== */
+
 .sidebar-logout {
-  border-top: 1px solid #1e293b;
+  flex-shrink: 0;
+
+  margin-top: auto;
   padding-top: 16px;
+
+  border-top: 1px solid #1e293b;
+}
+
+.logout-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+
+  width: 100%;
+  padding: 12px 14px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: transparent;
+  color: #94a3b8;
+
+  font-family: inherit;
+  font-size: 14px;
+  font-weight: 500;
+  text-align: left;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
 }
 
 .logout-item:hover {
-  background: rgba(239, 68, 68, 0.05);
+  background: rgba(239, 68, 68, 0.08);
   color: #ef4444;
 }
+
+.logout-item:focus-visible,
+.menu-item:focus-visible,
+.notification-button:focus-visible {
+  outline: 2px solid #a78bfa;
+  outline-offset: 2px;
+}
+
+/* =====================================================
+   RESPONSIVE SIDEBAR
+===================================================== */
+
+@media (max-width: 600px) {
+  .admin-sidebar {
+    width: 220px;
+    min-width: 220px;
+    max-width: 220px;
+    flex-basis: 220px;
+    padding: 20px 12px;
+  }
+
+  .notification-panel {
+    left: calc(100% + 6px);
+    width: 280px;
+    max-width: calc(100vw - 240px);
+  }
+}
+
+.contact-messages-layout {
+  display: flex;
+  min-height: 100vh;
+  width: 100%;
+}
+
+.contact-messages-main {
+  flex: 1;
+  min-width: 0;
+  padding: 30px;
+  overflow-x: auto;
+}
+
+.contact-messages-page {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+@media (max-width: 768px) {
+  .contact-messages-main {
+    padding: 18px;
+  }
+}
+.admin-sidebar {
+  width: 260px;
+  min-height: 100vh;
+  height: auto;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+

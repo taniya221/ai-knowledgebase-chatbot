@@ -23,9 +23,11 @@ function Login() {
         "http://localhost:5000/api/login",
         {
           method: "POST",
+
           headers: {
             "Content-Type": "application/json",
           },
+
           body: JSON.stringify({
             email,
             password,
@@ -37,39 +39,146 @@ function Login() {
 
       console.log("Login response:", data);
 
-      if (response.ok) {
-        localStorage.setItem("role", data.role);
-        localStorage.setItem("name", data.name);
-        localStorage.setItem("email", data.email);
+      // ==========================================
+      // LOGIN SUCCESS
+      // ==========================================
 
-        if (data.role?.toLowerCase() === "admin") {
-          navigate("/admin/dashboard");
-        } else {
-          navigate("/user-dashboard");
+      if (response.ok) {
+
+        // IMPORTANT:
+        // Your backend sends the data inside data.user
+        const user = data.user;
+
+        console.log("User:", user);
+        console.log("Role:", user?.role);
+
+        // Check if user information exists
+        if (!user) {
+          setError("Invalid login response from server.");
+          return;
         }
-      } else {
+
+        // Get role
+        const role = user.role
+          ? user.role.toLowerCase()
+          : "";
+
+        // ==========================================
+        // SAVE LOGIN INFORMATION
+        // ==========================================
+
+        localStorage.setItem(
+          "role",
+          role
+        );
+
+        localStorage.setItem(
+          "name",
+          user.name || ""
+        );
+
+        localStorage.setItem(
+          "email",
+          user.email || ""
+        );
+
+        // Also save complete user object
+        localStorage.setItem(
+          "user",
+          JSON.stringify(user)
+        );
+
+        console.log(
+          "Logged in role:",
+          role
+        );
+
+        // ==========================================
+        // ADMIN
+        // ==========================================
+
+        if (role === "admin") {
+
+          console.log(
+            "Admin login detected"
+          );
+
+          navigate(
+            "/admin/dashboard",
+            { replace: true }
+          );
+
+          return;
+        }
+
+        // ==========================================
+        // USER
+        // ==========================================
+
+        if (role === "user") {
+
+          console.log(
+            "User login detected"
+          );
+
+          navigate(
+            "/user-dashboard",
+            { replace: true }
+          );
+
+          return;
+        }
+
+        // ==========================================
+        // UNKNOWN ROLE
+        // ==========================================
+
+        console.error(
+          "Unknown role:",
+          user.role
+        );
+
         setError(
-          data.error || "Invalid email or password"
+          "Invalid user role."
+        );
+
+      } else {
+
+        setError(
+          data.message ||
+          data.error ||
+          "Invalid email or password"
         );
       }
+
     } catch (err) {
-      console.error("Login error:", err);
+
+      console.error(
+        "Login error:",
+        err
+      );
 
       setError(
         "Server connection error. Please try again."
       );
+
     } finally {
+
       setLoading(false);
     }
   };
 
   return (
     <div className="auth-fullscreen-container">
+
       <div className="auth-glow-bg"></div>
 
       <div className="auth-fullscreen-card">
 
-        <Link to="/" className="auth-brand">
+        <Link
+          to="/"
+          className="auth-brand"
+        >
           <div className="auth-brand-icon">
             K
           </div>
@@ -77,7 +186,9 @@ function Login() {
           <span>KnoAI</span>
         </Link>
 
-        <h2>Welcome back</h2>
+        <h2>
+          Welcome back
+        </h2>
 
         <p className="auth-subtitle">
           Please enter your details to sign in
@@ -95,7 +206,10 @@ function Login() {
           )}
 
           <div className="auth-form-group">
-            <label>Email</label>
+
+            <label>
+              Email
+            </label>
 
             <input
               type="email"
@@ -106,10 +220,14 @@ function Login() {
               }
               required
             />
+
           </div>
 
           <div className="auth-form-group">
-            <label>Password</label>
+
+            <label>
+              Password
+            </label>
 
             <div className="input-password-wrapper">
 
@@ -131,7 +249,9 @@ function Login() {
                 type="button"
                 className="password-toggle"
                 onClick={() =>
-                  setShowPassword(!showPassword)
+                  setShowPassword(
+                    !showPassword
+                  )
                 }
                 aria-label={
                   showPassword
@@ -139,20 +259,25 @@ function Login() {
                     : "Show password"
                 }
               >
-                {showPassword ? "🙈" : "👁️"}
+                {showPassword
+                  ? "🙈"
+                  : "👁️"}
               </button>
 
             </div>
+
           </div>
 
-          <div className="forgot-pass-wrapper">
-            <a
-              href="#forgot"
-              className="forgot-link"
-            >
-              Forgot password?
-            </a>
-          </div>
+    
+            <div className="forgot-pass-wrapper">
+              <Link
+                to="/forgot-password"
+                className="forgot-link"
+              >
+                Forgot password?
+              </Link>
+            </div>
+
 
           <button
             type="submit"
@@ -167,17 +292,23 @@ function Login() {
         </form>
 
         <p className="auth-switch-text">
+
           Don't have an account?{" "}
 
           <Link to="/signup">
             Sign up
           </Link>
+
         </p>
 
       </div>
+
     </div>
   );
 }
 
 export default Login;
+
+
+
 

@@ -264,3 +264,44 @@ body {
   text-align: center;
   margin-top: auto;
 }
+
+/* Neat formatting for chatbot replies */
+.message-bubble.bot > p {
+  margin: 0 0 12px;
+}
+
+.message-bubble.bot > p:last-child {
+  margin-bottom: 0;
+}
+
+.message-bubble.bot ul,
+.message-bubble.bot ol {
+  padding-left: 22px;
+  margin: 8px 0 12px;
+}
+
+.message-bubble.bot li {
+  margin-bottom: 6px;
+}
+
+.message-bubble.bot h1,
+.message-bubble.bot h2,
+.message-bubble.bot h3 {
+  margin: 12px 0 8px;
+  font-size: 16px;
+}
+
+.message-bubble.bot strong {
+  font-weight: 600;
+}
+.conversations-sidebar {
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.conv-list {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}

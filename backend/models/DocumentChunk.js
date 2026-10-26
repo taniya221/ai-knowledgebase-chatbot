@@ -1,7 +1,7 @@
-
 const mongoose = require("mongoose");
 
 const DocumentChunkSchema = new mongoose.Schema({
+
   documentId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Document",
@@ -22,6 +22,13 @@ const DocumentChunkSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+
+  // Vector embedding for semantic search
+  embedding: {
+    type: [Number],
+    default: [],
+  },
+
 });
 
 module.exports = mongoose.model("DocumentChunk", DocumentChunkSchema);
